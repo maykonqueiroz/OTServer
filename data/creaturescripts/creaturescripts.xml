@@ -35,9 +35,10 @@
 
 	
 	<!-- Custom systems -->
+	<event type="login" name="FirstItems" event="script" value="firstitems.lua"/>
 	<event type="login" name="FimVip" event="script" value="vip.lua"/>
-	<event type="login" name="VocVIP" event="script" value="promotevip.lua"/>
-	<event type="advance" name="VipDays" event="script" value="vipdays.lua"/>
+	<!-- <event type="login" name="VocVIP" event="script" value="promotevip.lua"/> -->
+	<!-- <event type="advance" name="VipDays" event="script" value="vipdays.lua"/> -->
 	<event type="login" name="expvip" script="expvip.lua"/>
 	<event type="kill" name="PlayerKill" event="script" value="arenakill.lua"/>
 	<event type="advance" name="recompensa" event="script" value="recompensa.lua"/>

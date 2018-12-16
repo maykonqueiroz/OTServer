@@ -3,7 +3,7 @@ local config = {
 onlypremium = true, -- se precisa ser premium para não perder nada
 levelandskills = false, -- se ao morrer o jogador irá perder level e skill
 loot = false, -- se ao morrer o jogador irá perder o loot
-level = 100 -- até que level irá proteger o player
+level = 30 -- até que level irá proteger o player
 }
 if isPlayer(cid) and getPlayerLevel(cid) <= config.level then
 if config.onlypremium == true and not isPremium(cid) then return TRUE end
