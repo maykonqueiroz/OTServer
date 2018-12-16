@@ -33,7 +33,6 @@
 			<inside>
 				<item id="2376" chance="2650"/><!-- sword -->
 				<item id="2398" chance="3400"/><!-- mace -->
-				<item id="10608" chance="11000"/><!-- lump of dirt -->
 			</inside>
 		</item>
 	</loot>

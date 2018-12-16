@@ -73,25 +73,7 @@
 		<voice sentence="Your soul will be mine!" yell="0"/>
 	</voices>
 	<loot>
-		<item id="2148" countmax="90" chance="40000"/><!-- gold coin -->
-		<item id="2148" countmax="70" chance="40000"/><!-- gold coin -->
-		<item id="2148" countmax="38" chance="40000"/><!-- gold coin -->
-		<item id="7368" countmax="5" chance="15390"/><!-- assassin star -->
-		<item id="2152" countmax="1" chance="69660"/><!-- platinum coin -->
-		<item id="5954" chance="630"/><!-- demon horn -->
-		<item id="2164" chance="160"/><!-- might ring -->
-		<item id="2462" chance="1260"/><!-- devil helmet -->
-		<item id="2432" chance="3950"/><!-- fire axe -->
-		<item id="2470" chance="450"/><!-- golden legs -->
-		<item id="2514" chance="540"/><!-- mastermind shield -->
-		<item id="2472" chance="70"/><!-- magic plate armor -->
-		<item id="2795" countmax="6" chance1="66010"/><!-- fire mushroom -->
-		<item id="2179" chance="1130"/><!-- golden ring -->
-		<item id="7590" chance="10000"/><!-- great mana potion -->
-		<item id="7590" chance="10000"/><!-- great mana potion -->
-		<item id="8473" chance="12500"/><!-- ultimate health potion -->
-		<item id="8473" chance="12500"/><!-- ultimate health potion -->
-		<item id="1987" chance="100000"><!-- bag -->
+	<item id="1987" chance="100000"><!-- bag -->
 			<inside>
 		<item id="2520" chance="650"/><!-- demon shield -->
 		<item id="2418" chance="1580"/><!-- golden sickle -->
@@ -111,5 +93,21 @@
 		<item id="7393" chance="110"/><!-- demon trophy -->
 			</inside>
 		</item>
+		<item id="2148" countmax="90" chance="40000"/><!-- gold coin -->
+		<item id="2148" countmax="70" chance="40000"/><!-- gold coin -->
+		<item id="7368" countmax="5" chance="15390"/><!-- assassin star -->
+		<item id="2152" countmax="1" chance="69660"/><!-- platinum coin -->
+		<item id="5954" chance="630"/><!-- demon horn -->
+		<item id="2164" chance="160"/><!-- might ring -->
+		<item id="2462" chance="1260"/><!-- devil helmet -->
+		<item id="2432" chance="3950"/><!-- fire axe -->
+		<item id="2470" chance="450"/><!-- golden legs -->
+		<item id="2514" chance="540"/><!-- mastermind shield -->
+		<item id="2472" chance="70"/><!-- magic plate armor -->
+		<item id="2795" countmax="6" chance1="66010"/><!-- fire mushroom -->
+		<item id="2179" chance="1130"/><!-- golden ring -->
+		<item id="7590" chance="10000"/><!-- great mana potion -->
+		<item id="8473" chance="12500"/><!-- ultimate health potion -->
+		
 	</loot>
 </monster>

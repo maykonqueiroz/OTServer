@@ -41,6 +41,6 @@
 		<item id="2148" countmax="45" chance="18250"/><!-- gold coin -->
 		<item id="2666" chance="8000"/><!-- meat -->
 		<item id="3976" countmax="2" chance="1500"/><!-- worm -->
-		<item id="11186" chance="8000"/><!-- carrion worm fang -->
+		<item id="11192" chance="8000"/><!-- carrion worm fang -->
 	</loot>
 </monster>
