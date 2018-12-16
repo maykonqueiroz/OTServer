@@ -388,6 +388,10 @@
 	<conjure name="Enchant Staff" words="exeta vis" lvl="41" mana="80" prem="0" conjureId="2433" reagentId="2401" exhaustion="950" needlearn="0" event="function" value="conjureItem">
 		<vocation id="5"/>
 	</conjure>
+	<conjure name="Enchant Spear" words="exeta con" lvl="45" mana="350" soul="3" prem="0" conjureId="7367" reagentId="2389" exhaustion="1000" needlearn="0" event="function" value="conjureItem">
+		<vocation id="3"/>
+		<vocation id="7"/>
+	</conjure>
 	<conjure name="Power Bolt" words="exevo con vis" lvl="59" mana="800" soul="4" prem="0" conjureId="2547" conjureCount="10" exhaustion="950" needlearn="0" event="function" value="conjureItem">
 		<vocation id="7"/>
 	</conjure>
