@@ -11907,14 +11907,14 @@
 		<attribute key="breakChance" value="9" />
 		<attribute key="ammoAction" value="moveback" />
 	</item>
-	<item id="7367" article="an" name="Donate Spear" plural="donate spears">
+	<item id="7367" article="an" name="enchanted spear" plural="enchanted spears">
 		<attribute key="weight" value="2000" />
-		<attribute key="attack" value="80" />
+		<attribute key="attack" value="38" />
 		<attribute key="weaponType" value="distance" />
 		<attribute key="shootType" value="enchantedspear" />
-		<attribute key="range" value="10" />
-                <attribute key="description" value="Melhor Spear." />
-		<attribute key="HitChance" value="100" />
+		<attribute key="range" value="5" />
+		<attribute key="breakChance" value="0" />
+		<attribute key="ammoAction" value="moveback" />
 	</item>
 	<item id="7368" article="an" name="assassin star" plural="assassin stars">
 		<attribute key="weight" value="200" />
