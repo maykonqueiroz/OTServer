@@ -34,14 +34,14 @@
 
 	houseDataStorage = "binary-tilebased"
 
-	accountManager = false
+	accountManager = true
 	namelockManager = true
 	newPlayerChooseVoc = true
 	newPlayerSpawnPosX = 32369
-	newPlayerSpawnPosY = 32241
+	newPlayerSpawnPosY = 32242
 	newPlayerSpawnPosZ = 7
 	newPlayerTownId = 5
-	newPlayerLevel = 8
+	newPlayerLevel = 10
 	newPlayerMagicLevel = 0
 	generateAccountNumber = false
 
@@ -75,7 +75,7 @@
 	autoBanishUnknownBytes = false
 
 	worldType = "open"
-	protectionLevel = 100
+	protectionLevel = 20
 	pvpTileIgnoreLevelAndVocationProtection = true
 	pzLocked = 100 * 180
 	huntingDuration = 60 * 1000
@@ -103,7 +103,7 @@
 	fistBaseAttack = 7
 
 	worldId = 0
-	ip = "localhost"
+	ip = "127.0.0.1"
 	loginPort = 7171
 	gamePort = 7172
 	adminPort = 7171
@@ -128,8 +128,8 @@
 	sqlHost = "localhost"
 	sqlPort = 3306
 	sqlUser = "root"
-	sqlPass = "senha"
-	sqlDatabase = "otserv"
+	sqlPass = ""
+	sqlDatabase = "tibiaserver"
 	sqlFile = ""
 	sqlKeepAlive = 0
 	mysqlReadTimeout = 10
@@ -233,10 +233,10 @@
 	eachBlessReduction = 8
 
 	experienceStages = true
-	rateExperience = 500.0
+	rateExperience = 1.0
 	rateExperienceFromPlayers = 0
-	rateSkill = 70.0
-	rateMagic = 40.0
+	rateSkill = 40.0
+	rateMagic = 30.0
 	rateLoot = 7.0
 	rateSpawn = 2
 
@@ -249,7 +249,7 @@
 	maxLevelThresholdForKilledPlayer = 1.1
 
 	rateStaminaLoss = 1
-	rateStaminaGain = 3
+	rateStaminaGain = 1
 	rateStaminaThresholdGain = 12
 	staminaRatingLimitTop = 40 * 60
 	staminaRatingLimitBottom = 14 * 60
@@ -280,8 +280,8 @@
 	teleportPlayerSummons = false
 
 	statusPort = 7171
-	ownerName = "UnderWAR"
-	ownerEmail = "toninhogc@hotmail.com"
+	ownerName = "Mike"
+	ownerEmail = ""
 	url = ""
 	location = "Brazil"
 	displayGamemastersWithOnlineCommand = false
