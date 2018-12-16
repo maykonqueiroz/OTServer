@@ -549,7 +549,7 @@
 	<movement type="Equip" itemid="2343" slot="head" event="function" value="onEquipItem"/>
 	<movement type="DeEquip" itemid="2343" slot="head" event="function" value="onDeEquipItem"/>
 	<movement type="Equip" itemid="2323" slot="head" event="function" value="onEquipItem">
-		<vocation name="Druid"/>
+		<vocation name="Master Sorcerer"/>
 		<vocation name="Elder Druid"/>
 		<vocation name="Epic Master Sorcerer"/>
 		<vocation name="Epic Elder Druid"/>
