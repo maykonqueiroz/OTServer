@@ -1,0 +1,134 @@
+Castle, woe_config, stor = {}, {}, {}
+	
+--Nome Do Castelo (?)
+Castle.name = 'War of Emperium'
+
+--Não Mecha se não vai bugar.
+Castle.tiles = 3131
+
+--Não Mecha se não vai bugar.
+Castle.portals = 3132
+
+--Não Mecha se não vai bugar.
+Castle.banderas = 3133
+
+--Não Mecha se não vai bugar.
+Castle.bases = 3134
+
+--Não Mecha se não vai bugar.
+Castle.decoraciones = {}
+
+--Templo do proprio castelo seria o piso amarelo no começo dele.
+Castle.pos = {x = 55, y = 78, z = 7}
+
+--Para onde seria teletransportado os players ao terminar o castle ou tivesse dominio.
+Castle._exit = {x = 32369, y = 32241, z = 7}
+
+--Onde o portal de entrada para o Castelo vai aparecer.
+Castle.desde = {x = 32342, y = 32213, z = 7, stackpos = 1}
+
+--true / false
+default_map = true
+--Não Mecha se não vai bugar.
+
+--Posição do principal Gerador Emperor, fica no andar 5 sempre emcima da base amarela.
+Castle.empePos = {x = 55, y = 34, z = 5, stackpos = 253}
+
+if default_map then
+	local pos = Castle.empePos
+	
+	--Não Mecha se não vai bugar.
+	Castle.guildEntry = {x = pos.x - 9, y = pos.y + 4, z = pos.z}
+	
+	--Não Mecha se não vai bugar.
+	Castle.salas = 
+		{
+			a = {fromx = pos.x - 18, tox = pos.x + 18, fromy = pos.y - 10, toy =  pos.y + 28, z = pos.z + 2},
+			b = {fromx = pos.x - 18, tox = pos.x + 18, fromy = pos.y - 10, toy =  pos.y + 28, z = pos.z + 1},
+			c = {fromx = pos.x - 18, tox = pos.x + 18, fromy = pos.y - 10, toy =  pos.y + 28, z = pos.z}
+		}
+
+	--Não Mecha se não vai bugar.
+	Castle.PreEmpes = 
+		{
+			{x = pos.x - 13, y = pos.y + 3, z = pos.z + 1, stackpos = 253}, 
+			{x = pos.x + 13, y = pos.y + 3, z = pos.z + 1, stackpos = 253}
+		}
+
+	--Não Mecha se não vai bugar.
+	Castle.PrePortalsPos = 
+		{
+			{x = pos.x - 4, y =  pos.y - 6, z = pos.z + 1, stackpos = 1},
+			{x = pos.x + 4, y =  pos.y - 6, z = pos.z + 1, stackpos = 1}
+		}
+
+	Castle.PreToPos = 
+		{
+			[1] = {x = pos.x - 7, y =  pos.y + 26, z = pos.z},
+			[2] = {x = pos.x + 7, y =  pos.y + 26, z = pos.z}
+		}
+
+else
+--Coordenada onde vai ser teletransportado ao usar atalho.
+--[[
+	Castle.guildEntry = {x = 46, y = 38, z = 5}
+			
+	Castle.salas = 
+		{
+			a = {fromx=37, tox=73, fromy=24, toy=62, z=7},
+			b = {fromx=37, tox=73, fromy=24, toy=62, z=6},
+			c = {fromx=37, tox=73, fromy=24, toy=62, z=5}
+		}
+
+	Castle.PreEmpes = 
+		{
+			{x=42, y=37, z=6, stackpos=253}, 
+			{x=68, y=37, z=6, stackpos=253}
+		}
+
+	Castle.PrePortalsPos = 
+		{
+			{x=51, y=28, z=6, stackpos=1},
+			{x=59, y=28, z=6, stackpos=1}
+		}
+
+	Castle.PreToPos = 
+		{
+			[1] = {x = 46, y = 38, z = 5},
+			[2] = {x = 64, y = 38, z = 5}
+		}
+]]
+end
+
+--Tempo de Duração do castelo.
+woe_config.timeToEnd = 61
+
+--Não Mecha se não vai bugar.
+woe_config.bcType = MESSAGE_EVENT_ADVANCE
+
+--Dias que vão ocorrer o War Of Emperium.
+woe_config.dias = {"monday", "wednesday", "saturday"}
+
+--Horario que vai começar automaticamente o War Of Emperium.
+woe_config.horaPartida = 18
+
+--Acesso para usar o comando /woe on, que inicia o castelo.
+woe_config.accessToStar = 3
+
+--Tempo de exausthed ao usar o comando !recall.
+woe_config.recallTime = 5 * 60
+
+--Não Mecha se não vai bugar.
+woe_config.premios = true
+
+--Não Mecha se não vai bugar.
+stor.register = 8589
+
+--Não Mecha se não vai bugar.
+stor.recall = 23155
+
+--Não Mecha se não vai bugar.
+stor.Started = 7801
+
+--Não Mecha se não vai bugar.
+stor.WoeTime = 7802

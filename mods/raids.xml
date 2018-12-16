@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<mod name="Automatic Raids" version="1.0" author="Igor Pereira" contact="doriusot@gmail.com" enabled="no">  
+<config name="raids_func"><![CDATA[
+days = {
+["Monday"] = {
+["08:00"] = {nome = "Rat", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}},m = {"100 Cave Rat", "100 Rat"}, Time = 30},
+["19:00"] = {nome = "Demon", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}},m = {"100 Demon"}, Time = 30},
+["16:00"] = {nome = "Ghazbaran", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}},m = {"2 Ghazbaran"}, Time = 30}
+},
+["Tuesday"] = {
+["10:00"] = {nome = "Elf", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Elf Scout", "100 Elf"}, Time = 30},
+["18:00"] = {nome = "Dragon", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Dragon"}, Time = 30},
+["20:00"] = {nome = "Zulazza the Corruptor", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Zulazza the Corruptor"}, Time = 30}
+},
+["Wednesday"] = {
+["08:00"] = {nome = "Nomad", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"20 Hunter", "100 Nomad"}, Time = 30},
+["19:00"] = {nome = "The Old Widow", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 The Old Widow"}, Time = 30},
+["12:00"] = {nome = "Dark Torturer", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Dark Torturer"}, Time = 30}
+},
+["Thursday"] = {
+["10:00"] = {nome = "Barbarian Bloodwalker", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"20 Barbarian Brutetamer", "100 Barbarian Bloodwalker"}, Time = 30},
+["20:00"] = {nome = "Necropharus", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Necropharus"}, Time = 30},
+["03:00"] = {nome = "Gloombringer", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"2 Gloombringer"}, Time = 30}
+},
+["Friday"] = {
+["04:00"] = {nome = "Quara Hydromancer", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"20 Quara Mantassin", "100 Quara Hydromancer"}, Time = 30},
+["18:00"] = {nome = "Morgaroth", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"2 Morgaroth"}, Time = 30},
+["23:00"] = {nome = "Dracola", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Dracola"}, Time = 30}
+},
+["Saturday"] = {
+["06:00"] = {nome = "Pirate Buccaneer", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"20 Pirate Corsair", "100 Pirate Buccaneer"}, Time = 30},
+["22:00"] = {nome = "Ferumbras", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"5 Ferumbras"}, Time = 30},
+["13:00"] = {nome = "Hydra", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Hydra"}, Time = 30}
+},
+["Sunday"] = {
+["15:00"] = {nome = "Demodras", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 Demodras"}, Time = 30},
+["08:00"] = {nome = "The Horned Fox", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"100 The Horned Fox"}, Time = 30},
+["18:00"] = {nome = "Orshabaal", pos = {fromPosition = {x=32331, y=32189, z=7},toPosition = {x=32425, y=32255, z=7}}, m = {"3 Orshabaal"}, Time = 30}
+}
+}
+]]></config>    
+<globalevent name="AutomaticRaids" interval="60000" event="script"><![CDATA[
+domodlib('raids_func')
+function onThink(interval, lastExecution)  
+if days[os.date("%A")] then
+hours = tostring(os.date("%X")):sub(1, 5)       
+tb = days[os.date("%A")][hours] 
+if tb then        
+function removeCreature(tb)
+for x = ((tb.pos.fromPosition.x)-10), ((tb.pos.toPosition.x)+10) do
+for y = ((tb.pos.fromPosition.y)-10), ((tb.pos.toPosition.y)+10) do
+local m = getTopCreature({x=x, y=y, z= tb.pos.fromPosition.z}).uid
+if m ~= 0 and isMonster(m) then
+doRemoveCreature(m)
+end
+end
+end
+end
+doBroadcastMessage("The invasion of " .. tb.nome .. " started")
+for _,x in pairs(tb.m) do
+for s = 1, tonumber(x:match("%d+")) do
+pos = {x = math.random(tb.pos.fromPosition.x, tb.pos.toPosition.x), y = math.random(tb.pos.fromPosition.y, tb.pos.toPosition.y), z = tb.pos.fromPosition.z}
+doSummonCreature(x:match("%s(.+)"), pos)
+end
+end
+addEvent(removeCreature, tb.Time*60*1000, tb)
+end
+end
+return true
+end
+]]></globalevent>
+</mod>

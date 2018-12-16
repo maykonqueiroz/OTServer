@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mod name="Team Event" version="2.0" author="Igor Pereira" contact="doriusot@gmail.com" enabled="yes">
+ <description>
+ 
+Full auto Team BattleEvent(v2.0) for 0.4 :
+ 
+		1- I currently rescripted this event from scratch again.
+ 
+		2- This version is much more better than the one before, it is more cleaner, clearer and with more options.
+ 
+		3- This version was tested on 0.4 latest one 4626, should work on lower rev too.
+ 
+		4- Removed the npc part it is now based on tp creation.
+ 
+		5- More silent boradcasting for in event progress and no spam, I hope!
+ 
+		6- you now get the options to show event stats on cancel msg area and (to / not to) show left players with names each x interval.
+ 
+		8- Team balancer have been added to only balance count in both teams.
+ 
+		9- Added a countdown option before fight starts.
+ 
+		10- Now starts on a defined time every day
+ 
+   </description>
+ 
+<config name="teamSetting"><![CDATA[
+--[[Local Config]]--
+ 
+--//storages
+ 
+inBlue = 9900
+inRed = 9901
+joiner = 9907
+ 
+blueKills = 9902
+redKills = 9903
+ 
+eventRecruiting = 9904
+eventStarted = 9905
+eventTime = 9906
+ 
+itemToGet = 9908
+countItemToGet = 9909
+ 
+nextExecute = 9910
+ 
+blueCount = 9911
+redCount = 9912
+ 
+--// Positions
+ 
+teleporterPosition = {x = 32341, y = 32213, z = 7} --Place where the event tp will be created
+ 
+waitRoomPlace = {x = 189, y = 132, z = 7} --Place of the waitnig room (the place ppl will wait for team to be full)
+ 
+waitRoomDimensions = { --Enter the start pos[top left sqm] and end pos[bottom right sqm] of waitnig room here
+							startPos = {x = 179, y = 125, z = 7}, 
+							endPos = {x = 200, y = 139, z = 7}
+							}
+ 
+ 
+eventPlaceDimensions = { --Enter the start pos[top left sqm] and end pos[bottom right sqm] of event place here
+							startPos = {x = 151, y = 46, z = 7}, 
+							endPos = {x = 232, y = 100, z = 7}
+							}
+blueTeamPos = {x = 216, y = 54, z = 7}
+redTeamPos = {x = 159, y = 86, z = 7}
+ 
+ 
+--// General settings
+ 
+recruitTime = 10 -- Time in minutes to gather players to event, will broadcast event started each min
+ 
+minimumPlayersJoins = 2 --If the number of layer joined is less than that then event would be cancelled
+ 
+balanceTeams = true -- This will balance number of players in both teams the extra player will be kicked out of event
+ 
+ 
+removeTeleportOnEventEnd = false -- if you want to remove the tp when the event finish set it to true, normally tp will just be diabled
+ 
+eventMaxTime = 10 -- Time in minutes, this is the max time event will be running. After checks are caried winner is declared
+ 
+showEventSats = true -- This is like a timer that is always there about event stats (time,oponents left, teammates left). It appears in the cancel messages place.
+ 
+sendLeftPlayers = true -- Well this will send to all alive players the names& numebr of the oponents left each interval defined down			
+intervalToSendLeftPlayers = 11 -- interval(in seconds) to sendLeftPlayers , must be more than 10 sec
+ 
+ 
+countDownOnStart = true -- Well this occurs when players are teleported to their places in the arena , so if this is true it start to count down to the joined players then when count down finish they can start killing each other(event really begins)
+ 
+countDownFrom = 10 -- Starts count down from this number when event start, if above is set true 			
+ 
+minJoinLevel = 100 -- minimm lvl that can join event
+ 
+rewards = { --Example [%] = {  {itemid/name, count}  ,..........}	count isnt more than 100
+ 
+					[65] = { {8304,1} , {"Double Exp 60 Minutes",1} },
+					[25] = { {"boots of haste",1} , {2195,1} },
+					[10] = { {"Crystal Coin",30} , {"crystal coin",30} }
+				}
+ 
+			--[[ Note : make sure if you edited % that sum should be equal to 100, you can add more % elements to suit your needs also more items if you want in each %
+					[65],[25],[10] -> is the % of this item to be found the rest is clear ,items in each % and it will be chosen randomly]]--
+ 
+ 
+ ]]></config>
+ <lib name="teamFunctions"><![CDATA[
+domodlib('teamSetting')
+ 
+--[[Conditions don't touch]]--
+local bmale = createConditionObject(CONDITION_OUTFIT)
+setConditionParam(bmale, CONDITION_PARAM_TICKS, -1)
+addOutfitCondition(bmale, {lookType = math.random(128,134), lookHead = 88, lookBody = 88, lookLegs = 88, lookFeet = 88, lookTypeEx = 0, lookAddons = 3})
+ 
+local bfemale = createConditionObject(CONDITION_OUTFIT)
+setConditionParam(bfemale, CONDITION_PARAM_TICKS, -1)
+addOutfitCondition(bfemale, {lookType = math.random(136,142), lookHead = 88, lookBody = 88, lookLegs = 88, lookFeet = 88, lookTypeEx = 0, lookAddons = 3})
+ 
+local rmale = createConditionObject(CONDITION_OUTFIT)
+setConditionParam(rmale, CONDITION_PARAM_TICKS, -1)
+addOutfitCondition(rmale, {lookType = math.random(128,134), lookHead = 94, lookBody = 94, lookLegs = 94, lookFeet = 94, lookTypeEx = 0, lookAddons = 3})
+ 
+local rfemale = createConditionObject(CONDITION_OUTFIT)
+setConditionParam(rfemale, CONDITION_PARAM_TICKS, -1)
+addOutfitCondition(rfemale, {lookType = math.random(136,142),lookHead = 94, lookBody = 94, lookLegs = 94, lookFeet = 94, lookTypeEx = 0, lookAddons = 3})
+ 
+local infight = createConditionObject(CONDITION_INFIGHT,-1)
+--[[Local Config]]--
+ 
+--[[Functions]]--
+ 
+-- General info
+function isFightOn()
+	return getStorage(eventStarted) > 0
+end
+function isRecruitOn()
+	return getStorage(eventRecruiting) > 0
+end
+function getMinJoinLevel()
+	return minJoinLevel
+end
+function getJoiners()
+	joiners = {}
+	for _,cid in ipairs(getPlayersOnline()) do
+		if isJoiner(cid) then
+			if isInRecruitArea(cid) or isInFightArea(cid) then 
+				table.insert(joiners,cid)
+			end
+		end
+	end
+	return joiners
+end
+ 
+function getLeftMembersNames(team)
+	str = "Oponents left("..#team..") :"
+	left = ""
+	for k,cid in ipairs(team) do left  = (left ..""..(k == 1 and "" or ", ")..""..getCreatureName(cid).."["..getPlayerLevel(cid).."]" ) end
+	str = str .." " .. (left == "" and "none" or left).. "."
+	return str
+end
+function disPlayEventStats()
+	if not showEventSats then return false end
+	if getStorage(eventTime) - os.time() <= 0 then return false end
+ 
+	left = os.date("%M:%S",(getStorage(eventTime) - os.time()))
+	for _,cid in ipairs(getJoiners()) do 
+		oponentsLeft = isBlue(cid) and #getRedMembers() or #getBlueMembers()
+		teamMatesLeft = isBlue(cid) and math.max(0,#getBlueMembers()-1) or math.max(0,#getRedMembers()-1)
+		doPlayerSendCancel(cid,"Time left: ".. left.."   ||   Oponents left: "..oponentsLeft.."/"..oponentCount(cid).."   ||   Team-mates left: "..teamMatesLeft.."/".. math.max(0,matesCount(cid)-1))
+	end
+ 
+end
+ 
+function doSendLeftPlayers()
+	if not sendLeftPlayers then return false end
+	if intervalToSendLeftPlayers <= 10 then return false end
+	for _,cid in ipairs(getJoiners()) do
+		doPlayerSendTextMessage(cid,MESSAGE_TYPES["orange"],getLeftMembersNames(isRed(cid) and getBlueMembers() or getRedMembers()))
+	end
+end
+ 
+function getBlueMembers()
+	members = {}
+	for _,cid in ipairs(getPlayersOnline()) do 
+		if isBlue(cid) then
+			table.insert(members,cid)
+		end
+	end
+	return members
+end
+function getRedMembers()
+	members = {}
+	for _,cid in ipairs(getPlayersOnline()) do 
+		if isRed(cid) then
+			table.insert(members,cid)
+		end
+	end
+	return members
+end
+ 
+ 
+-- starting fight
+ 
+function startRecruiting()
+	doSetStorage(eventRecruiting,1)
+end
+function startEvent()
+	doSetStorage(eventRecruiting,-1)
+ 
+	if removeTeleportOnEventEnd then
+		tp = getTileItemById(teleporterPosition,1387).uid
+		if tp > 0 then doRemoveItem(tp) end
+	end
+ 
+	if not balanceTeams() then
+		resetEvent()
+		return false
+	end
+	for _,cid in ipairs(getBlueMembers()) do
+		doTeleportThing(cid,blueTeamPos,false)
+		doSendMagicEffect(getThingPos(cid),10)
+	end
+	setBlueCount(#getBlueMembers())
+	for _,cid in ipairs(getRedMembers()) do
+		doTeleportThing(cid,redTeamPos,false)
+		doSendMagicEffect(getThingPos(cid),10)
+	end
+	setRedCount(#getRedMembers())
+	startCountDown()
+	return true
+end
+ 
+function setBlueCount(count)
+	doSetStorage(blueCount,-1)
+	doSetStorage(blueCount,count)
+end
+function oponentCount(cid)
+	return isBlue(cid) and getStorage(redCount) or getStorage(blueCount)
+end
+function matesCount(cid)
+	return isBlue(cid) and getStorage(blueCount) or getStorage(redCount)
+end
+ 
+function setRedCount(count)
+	doSetStorage(redCount,-1)
+	doSetStorage(redCount,count)
+end
+function balanceTeams()
+	members = getJoiners()
+	if #members < minimumPlayersJoins then
+		doBroadcastMessage("Team-Battle event was cancelled as only ".. #members .. " players joined.")
+		return false
+	end
+	if (math.mod(#members,2) ~= 0) then
+		kicked = members[#members]
+		clearTeamEventStorages(kicked)
+		doPlayerSendTextMessage(kicked,MESSAGE_TYPES["info"],"Sorry, you have been kicked out of event for balancing both teams.")
+	end
+	count = 1
+	for _,cid in ipairs(getJoiners()) do
+		if (math.mod(count,2) ~= 0) then
+			addToBlue(cid)
+		else
+			addToRed(cid)
+		end
+		count = count + 1
+	end
+	return true
+end
+function startCountDown()
+	if(countDownOnStart) then
+		for _,cid in ipairs(getJoiners()) do
+			doCreatureSetNoMove(cid,true)
+			for i = 0,countDownFrom do
+				addEvent(doPlayerSendTextMessage,i*1000, cid, MESSAGE_TYPES["info"], (i == 0 and countDownFrom or countDownFrom-i) )
+			end
+		end
+		addEvent(startFight,(countDownFrom+1)*1000)
+	else
+		startFight()
+	end
+end
+function startFight()
+	doSetStorage(eventStarted,1)
+	for _,cid in ipairs(getJoiners()) do
+		doCreatureSetNoMove(cid,false)
+		doPlayerSendTextMessage(cid,MESSAGE_TYPES["warning"],"Fight Starts!")
+	end
+	addEvent(endTeamEvent,eventMaxTime*60*1000,"maxTime")
+	doSetStorage(eventTime,os.time()+eventMaxTime*60)
+end
+ 
+function teleportToWaitRoom(cid)
+	doTeleportThing(cid,waitRoomPlace)
+	doSendMagicEffect(waitRoomPlace,10)
+	if getPlayerGroupId(cid) < 4 then
+		addToJoiners(cid)
+	end
+	doPlayerSendTextMessage(cid,MESSAGE_TYPES["blue"],"Please be patient till the event starts and don't logout.")
+	return true
+end
+ 
+ 
+ 
+-- Modifing teams & checking member states
+function isBlue(cid)
+	return (getPlayerStorageValue(cid,inBlue) > 0)
+end
+function isRed(cid)
+	return (getPlayerStorageValue(cid,inRed) > 0)
+end
+function isJoiner(cid)
+	return (getPlayerStorageValue(cid,joiner) > 0)
+end
+function addToBlue(cid)
+	setPlayerStorageValue(cid,inBlue,1)
+	doAddCondition(cid, (getPlayerSex(cid) == 1) and bmale or bfemale)
+	doAddCondition(cid,infight)
+end
+function addToRed(cid)
+	setPlayerStorageValue(cid,inRed,1)
+	doAddCondition(cid, (getPlayerSex(cid) == 1) and rmale or rfemale)
+	doAddCondition(cid,infight)
+end
+function addToJoiners(cid)
+	setPlayerStorageValue(cid,joiner,1)
+end
+function removeFromBlue(cid)
+	setPlayerStorageValue(cid,inBlue,-1)
+end
+function removeFromRed(cid)
+	setPlayerStorageValue(cid,inRed,-1)
+end
+function removeFromjoiners(cid)
+	setPlayerStorageValue(cid,joiner,-1)
+end
+function isInRecruitArea(cid)
+	return isInRange(getThingPos(cid),waitRoomDimensions.startPos,waitRoomDimensions.endPos)
+end
+function isInFightArea(cid)
+	return isInRange(getThingPos(cid),eventPlaceDimensions.startPos,eventPlaceDimensions.endPos)
+end
+function clearTeamEventStorages(cid)
+	if isInRecruitArea(cid) or isInFightArea(cid) then
+		doTeleportThing(cid,getTownTemplePosition(getPlayerTown(cid)))
+		doSendMagicEffect(getThingPos(cid),10)
+	end
+ 
+	if isFightOn() then
+		if isJoiner(cid) then
+			if isBlue(cid) then
+				addRedKills()
+			elseif isRed(cid) then
+				addBlueKills()
+			end
+			doPlayerSendTextMessage(cid,MESSAGE_TYPES["orange"],"You have died in Team-Battle Event.")
+		end
+	end
+ 
+	removeFromjoiners(cid)
+	removeFromBlue(cid)
+	removeFromRed(cid)
+	doRemoveConditions(cid, false)
+ 
+end
+function haveUnrecivedReward(cid)
+	return getPlayerStorageValue(cid,itemToGet) > 0 and getPlayerStorageValue(cid,countItemToGet) > 0 
+end
+function recieveLateReward(cid)
+	if haveUnrecivedReward(cid) then
+		if not doPlayerAddItem(cid,getPlayerStorageValue(cid,itemToGet),getPlayerStorageValue(cid,countItemToGet),false) then
+			msg = "You need to free some space then relog to take your reward."
+			doPlayerSendTextMessage(cid,MESSAGE_TYPES["warning"],msg)
+		else
+			setPlayerStorageValue(cid,itemToGet,-1) 
+			setPlayerStorageValue(cid,countItemToGet,-1)
+			doPlayerSendTextMessage(cid,MESSAGE_TYPES["info"],"You have recieved your reward.")
+		end
+	end
+end
+ 
+-- Win or lose
+function thereIsAWinner()
+	if redWon() or blueWon() then
+		return true
+	end
+	return false
+end
+function blueWon()
+	return( (#getBlueMembers() > 0 ) and ( #getRedMembers() == 0) )
+end
+function redWon()
+	return( (#getRedMembers() > 0) and (#getBlueMembers() == 0) )
+end
+function isDraw()
+	return #getBlueMembers() == #getRedMembers()
+end
+function getWinner()
+	if #getBlueMembers() > #getRedMembers() then
+		return {getBlueMembers(),getRedMembers(),"Blue team won."}
+	elseif #getRedMembers() > #getBlueMembers() then
+		return {getRedMembers(),getBlueMembers(),"Red team won."}
+	else
+		return { {},{},"it was a draw."}
+	end
+end
+ 
+ 
+-- Adding kills
+function addBlueKills()
+	doSetStorage(blueKills, math.max(1,getStorage(blueKills)+1))
+end
+function addRedKills()
+	doSetStorage(redKills, math.max(1,getStorage(redKills)+1))
+end
+ 
+-- Ending event
+ 
+function endTeamEvent(type)
+	if isFightOn() then
+		doSetStorage(eventStarted,-1)
+		doBroadcastMessage("Team-Battle event ended and "..getWinner()[3])
+		if not isDraw() then
+			win(getWinner()[1],type)
+			lose(getWinner()[2],type)
+		else
+			draw()
+		end
+	end
+	addEvent(resetEvent,2 * 1000) --- tp player to home remove all storages and reset event global storages
+end
+ 
+function getPercent()
+	rand= math.random(1,100)
+	prev = 0
+	chosenItem = 0
+	for k, v in pairs(rewards) do 
+		if rand > prev and rand <= k+prev then
+			chosenItem = k
+			break
+		else
+			prev =  k+prev
+		end
+	end
+	return chosenItem
+end
+ 
+function generateReward(cid)
+	percent = getPercent()
+	if percent == 0 then
+		print("Error in the reward item. Please inform Doggynub.")
+		return true
+	end
+ 
+	randomizer = rewards[percent][math.random(1,#rewards[percent])]
+	item = not tonumber(randomizer[1]) and getItemIdByName(randomizer[1]) or randomizer[1]
+	count = isItemStackable(item) and math.min(randomizer[2],100) or 1
+	if item == nil or item == 0 then
+		print("Error in the  item format. Please inform Doggynub.")
+		return true
+	end
+ 
+	msg = "You have won ".. (count == 1 and "a" or count) .." " .. getItemNameById(item) .. "" .. (count == 1 and "" or "s").."."
+ 
+	if not doPlayerAddItem(cid,item,count,false) then
+		msg = msg.. "You need to free some space then relog to take your reward."
+		setPlayerStorageValue(cid,itemToGet,item)
+		setPlayerStorageValue(cid,countItemToGet,count)
+	end
+ 
+	doPlayerSendTextMessage(cid,MESSAGE_TYPES["white"],msg)
+ 
+end
+ 
+ 
+ 
+function generateStatsMessage(cid, type, stats)
+	msg = {
+					["KO"] = { ["win"] = "Event ended. Your team have won by killing all oponent's team members. You will recieve your reward shortly, check incoming messages.",
+								["lose"] = "Event ended. Your team have lost as the Oponent team killed all your team's members."
+							},
+					["maxTime"] = {
+									["win"] = "Event max-time finished and your team have won. You will recieve your reward shortly, check incoming messages.",
+									["lose"] = "Event max-time finished and your team have lost.",
+									["draw"] = "Event max-time finished and it is a draw.(no team won)"
+								}
+				}
+	doPlayerSendTextMessage(cid,MESSAGE_TYPES["info"],msg[type][stats])
+ 
+end
+function win(winners,type)
+	for _,cid in ipairs(winners) do
+		generateStatsMessage(cid, type, "win")
+		generateReward(cid)
+	end
+end
+function lose(losers,type)
+	for _,cid in ipairs(losers) do
+		generateStatsMessage(cid, type, "lose")
+	end
+end
+function draw()
+	for _,cid in ipairs(getJoiners()) do
+		generateStatsMessage(cid, "maxTime", "draw")
+	end
+end
+ 
+function resetEvent()
+	doSetStorage(eventRecruiting,-1)
+	doSetStorage(nextExecute,-1)
+	doSetStorage(eventStarted,-1)
+	doSetStorage(eventTime,-1)
+	doSetStorage(blueKills,-1)
+	doSetStorage(redKills,-1)
+	for _,cid in ipairs(getPlayersOnline()) do 
+		if isBlue(cid) or isRed(cid) or isJoiner(cid) then
+			clearTeamEventStorages(cid)
+		end
+	end
+end
+ 
+ 
+]]></lib>
+ <event type="login" name="teambattleLogin" event="script"><![CDATA[
+domodlib('teamFunctions')
+ 
+function onLogin(cid)
+	clearTeamEventStorages(cid)
+	recieveLateReward(cid)
+ 
+	registerCreatureEvent(cid, "teamEventStats")
+	registerCreatureEvent(cid, "teambattleLogout")
+	registerCreatureEvent(cid, "teambattleCombat")
+	return true
+end
+]]></event>
+<event type="combat" name="teambattleCombat" event="script"><![CDATA[
+domodlib('teamFunctions')
+ 
+function onCombat(cid, target)
+	if isFightOn() then
+		if isBlue(cid) and isBlue(target) then
+			return false
+		end
+		if isRed(cid) and isRed(target) then
+			return false
+		end
+	end
+	return true
+end
+ 
+]]></event>
+ <event type="logout" name="teambattleLogout" event="script"><![CDATA[
+domodlib('teamFunctions')
+ 
+function onLogout(cid)
+	clearTeamEventStorages(cid)
+	if thereIsAWinner() then
+		endTeamEvent("KO")
+	end
+	return true
+end
+ 
+]]></event>
+<event type="statschange" name="teamEventStats" event="script"><![CDATA[
+domodlib('teamFunctions')
+ 
+corpse_ids = {
+        [0] = 3065, -- female
+        [1] = 3058 -- male
+}
+function onStatsChange(cid, attacker, type, combat, value)
+	if combat == COMBAT_HEALING then
+		return true
+	end
+	if getCreatureHealth(cid) > value then
+		return true
+	end
+ 
+	if isInFightArea(cid) and isFightOn() then
+		if isBlue(cid) or isRed(cid) then
+			corpse = doCreateItem(corpse_ids[getPlayerSex(cid)], 1, getThingPos(cid))
+			doCreateItem(2016, 2, getThingPos(cid))
+			clearTeamEventStorages(cid)
+			doItemSetAttribute(corpse, "description", "You recognize "..getCreatureName(cid)..". He was killed by "..(isMonster(attacker) and "a "..string.lower(getCreatureName(attacker)) or isCreature(attacker) and getCreatureName(attacker) or "a field item")..".\n[Team-Event kill]") 
+			doCreatureAddHealth(cid,getCreatureMaxHealth(cid))
+			if thereIsAWinner() then
+				endTeamEvent("KO")
+			end
+ 
+			return false
+ 
+		end
+ 
+	end
+ 
+	return true
+end 
+]]></event>
+ 
+<globalevent name="teamBattleStart" time="20:02:00" event="script"><![CDATA[
+domodlib('teamFunctions')
+ 
+function onTime()
+	resetEvent()
+	if getTileItemById(teleporterPosition,1387).uid < 1 then
+		tp = doCreateItem(1387,1,teleporterPosition)
+		doItemSetAttribute(tp, "aid", 9990)
+	end
+ 
+	startRecruiting()
+	for i = 0, recruitTime-1 do
+		addEvent(doBroadcastMessage, i * 60* 1000,"Team-Battle event is recruting players by entering event tp. Fight begins in "..(i == 0 and recruitTime or recruitTime-i).." minutes.",MESSAGE_TYPES["warning"])
+	end
+ 
+	addEvent(startEvent, recruitTime * 60 * 1000)
+ 
+	return true
+end
+ 
+ 
+ ]]></globalevent>
+ 
+<globalevent name = "teamBattletime" interval="1" event="script"><![CDATA[
+domodlib('teamFunctions')
+ 
+function onThink()
+	if isFightOn() then
+		disPlayEventStats()
+ 
+		if getStorage(nextExecute) == -1 or getStorage(nextExecute) <= os.time() then
+			doSendLeftPlayers()
+			doSetStorage(nextExecute,os.time()+intervalToSendLeftPlayers)
+		end
+	end
+	return true
+end
+ 
+ ]]></globalevent>
+<movevent type="StepIn" actionid="9990" event="script"><![CDATA[
+domodlib('teamFunctions')
+ 
+function onStepIn(cid, item, position, fromPosition)
+	if not isRecruitOn() then
+		doPlayerSendTextMessage(cid,MESSAGE_TYPES["orange"],"Event isn't currently opened.")
+		doTeleportThing(cid,fromPosition)
+		doSendMagicEffect(fromPosition,2)
+		return true
+	end
+	if getPlayerLevel(cid) < getMinJoinLevel() then
+		doPlayerSendTextMessage(cid,MESSAGE_TYPES["orange"],"Only players of level ".. getMinJoinLevel().. "+ can join this event.")
+		doTeleportThing(cid,fromPosition)
+		return true
+	end
+	teleportToWaitRoom(cid)
+	return true
+end
+ 
+ 
+ 
+ 
+]]> </movevent>
+</mod>
